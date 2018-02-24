@@ -5,7 +5,7 @@
 #include <math.h>
 #include <unistd.h>
 #include <stdlib.h>
-
+#include <stdio.h>
 struct Shape {
 	float vel[2];
 	float pos[2];
@@ -32,3 +32,7 @@ struct Shape {
 struct Collision {
 	
 };
+
+void printToConsole() {
+	printf("Test\n");fflush(stdout);
+}

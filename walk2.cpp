@@ -342,6 +342,7 @@ Image img[3] = {
 "./images/exp.png",
 "./images/exp44.png" };
 
+extern void printToConsole();
 
 int main(void)
 {
@@ -583,6 +584,9 @@ int checkKeys(XEvent *e)
 			gl.exp44.pos[2] =   0.0;
 			timers.recordTime(&gl.exp44.time);
 			gl.exp44.onoff ^= 1;
+			break;
+		case XK_p:
+			printToConsole();
 			break;
 		case XK_Left:
 			break;
@@ -928,6 +932,7 @@ void render(void)
 	ggprint8b(&r, 16, c, "frame: %i", gl.walkFrame);
 	ggprint8b(&r, 16, c, "Time : %i", display_sec()); //KB
 	ggprint8b(&r, 16, c, "Function Time of KBdrawbox: %f", KBdrawBox());
+	ggprint8b(&r, 16, c, "p    Randi's Print To Console");
 	if (gl.movie) {
 		screenCapture();
 	}

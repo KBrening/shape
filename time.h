@@ -10,9 +10,10 @@ class Timer {
 		x = 0;
 	}
 	int inc_timer() {
-		for (int i = 1; i <= 10; i++) {		
-			if (i == 10)			
+		for (int i = 1; i <= 60; i++) {		
+			if (i == 60)			
 				return x++;
 		}
+		return x;
 	}
-}t;
+};

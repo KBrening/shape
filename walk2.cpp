@@ -53,6 +53,11 @@ void init();
 void physics();
 void render();
 
+//----------------------------------------------------------------------------
+//EXTERNAL FUNCTIONS
+extern int display_sec();
+extern double KBdrawBox();
+
 //-----------------------------------------------------------------------------
 //Setup timers
 class Timers {
@@ -746,6 +751,8 @@ void render(void)
 		glEnd();
 		glPopMatrix();
 	}
+	
+
 	//
 	//========================
 	//Render the tile system
@@ -919,15 +926,9 @@ void render(void)
 	ggprint8b(&r, 16, c, "right arrow -> walk right");
 	ggprint8b(&r, 16, c, "left arrow  <- walk left");
 	ggprint8b(&r, 16, c, "frame: %i", gl.walkFrame);
-	ggprint8b(&r, 16, c, "Time : %i", t.inc_time()); //KB
+	ggprint8b(&r, 16, c, "Time : %i", display_sec()); //KB
+	ggprint8b(&r, 16, c, "Function Time of KBdrawbox: %f", KBdrawBox());
 	if (gl.movie) {
 		screenCapture();
 	}
 }
-
-
-
-
-
-
-

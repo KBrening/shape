@@ -24,6 +24,7 @@
 #include "log.h"
 //#include "ppm.h"
 #include "fonts.h"
+#include "time.h"
 
 //defined types
 typedef double Flt;
@@ -51,6 +52,11 @@ int checkKeys(XEvent *e);
 void init();
 void physics();
 void render();
+
+//----------------------------------------------------------------------------
+//EXTERNAL FUNCTIONS
+extern int display_sec();
+extern double KBdrawBox();
 
 //-----------------------------------------------------------------------------
 //Setup timers
@@ -749,6 +755,8 @@ void render(void)
 		glEnd();
 		glPopMatrix();
 	}
+	
+
 	//
 	//========================
 	//Render the tile system
@@ -922,15 +930,10 @@ void render(void)
 	ggprint8b(&r, 16, c, "right arrow -> walk right");
 	ggprint8b(&r, 16, c, "left arrow  <- walk left");
 	ggprint8b(&r, 16, c, "frame: %i", gl.walkFrame);
+	ggprint8b(&r, 16, c, "Time : %i", display_sec()); //KB
+	ggprint8b(&r, 16, c, "Function Time of KBdrawbox: %f", KBdrawBox());
 	ggprint8b(&r, 16, c, "p    Randi's Print To Console");
 	if (gl.movie) {
 		screenCapture();
 	}
 }
-
-
-
-
-
-
-

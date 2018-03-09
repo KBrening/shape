@@ -343,6 +343,8 @@ Image img[3] = {
 "./images/exp44.png" };
 
 extern void printToConsole();
+extern double firstFunc();
+extern double secondFunc();
 
 int main(void)
 {
@@ -932,7 +934,7 @@ void render(void)
 	ggprint8b(&r, 16, c, "frame: %i", gl.walkFrame);
 	ggprint8b(&r, 16, c, "Time : %i", display_sec()); //KB
 	ggprint8b(&r, 16, c, "Function Time of KBdrawbox: %f", KBdrawBox());
-	ggprint8b(&r, 16, c, "p    Randi's Print To Console");
+	ggprint8b(&r, 16, c, "Randi's F(1) time: %f | F(2) time: %f", firstFunc(), secondFunc());
 	if (gl.movie) {
 		screenCapture();
 	}

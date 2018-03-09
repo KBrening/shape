@@ -1,11 +1,41 @@
 //Project: Shape
 //Name: Randi Al.
-//Last modified: 2/23/18
+//Last modified: 3/9/18
 
 #include <math.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
+
+double firstFunc() {
+    static double acc = 0.0;
+    struct timespec first, second;
+    int total = 0;
+    clock_gettime(CLOCK_REALTIME, &first);
+    for (int i = 0; i < 5000000; i++)
+	total++;
+    clock_gettime(CLOCK_REALTIME, &second);
+    acc += (double)(second.tv_sec - first.tv_sec) + 
+	  (double)(second.tv_nsec - first.tv_nsec) / 1e9;
+    return acc;
+}
+
+double secondFunc() {
+    static double acc = 0.0;
+    struct timespec first, second;
+    int n = 5000000;
+    clock_gettime(CLOCK_REALTIME, &first);
+    n = 0.5 * n * (n + 1);
+    clock_gettime(CLOCK_REALTIME, &second);
+    acc += (double)(second.tv_sec - first.tv_sec) + 
+	  (double)(second.tv_nsec - first.tv_nsec) / 1e9;
+    return acc;
+}
+	 
+
+
+
 struct Shape {
 	float vel[2];
 	float pos[2];

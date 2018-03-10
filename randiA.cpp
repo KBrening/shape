@@ -33,9 +33,6 @@ double secondFunc() {
     return acc;
 }
 	 
-
-
-
 struct Shape {
 	float vel[2];
 	float pos[2];

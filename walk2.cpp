@@ -57,6 +57,8 @@ void render();
 //EXTERNAL FUNCTIONS
 extern int display_sec();
 extern double KBdrawBox();
+extern double jpTest1();
+extern double jpTest2();
 
 //-----------------------------------------------------------------------------
 //Setup timers
@@ -934,7 +936,13 @@ void render(void)
 	ggprint8b(&r, 16, c, "frame: %i", gl.walkFrame);
 	ggprint8b(&r, 16, c, "Time : %i", display_sec()); //KB
 	ggprint8b(&r, 16, c, "Function Time of KBdrawbox: %f", KBdrawBox());
+
+	ggprint8b(&r, 16, c, "p    Randi's Print To Console");
+    ggprint8b(&r, 16, c, "Jordan's 1st Time Function: %f", jpTest1());
+    ggprint8b(&r, 16, c, "Jordan's 2nd Time Function: %f", jpTest2());
+
 	ggprint8b(&r, 16, c, "Randi's F(1) time: %f | F(2) time: %f", firstFunc(), secondFunc());
+
 	if (gl.movie) {
 		screenCapture();
 	}

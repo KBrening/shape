@@ -11,7 +11,6 @@
 
 using namespace std;
 
-
 /*{
   Rect r;
   r.bot = 120;
@@ -21,39 +20,40 @@ using namespace std;
 
   }*/
 
-
-double jpTest1() {
-
-
-    //Factorial using loop
+double jpTest1()
+{
+    //Factorial using for loop
     static double t = 0.0;
-    int n = 0.0;
+    double n = 2000;
+    int total = 1;
     clock_t start;
     start = clock();
 
     for(int i = 1; i <= n; i++)
-        t *= i;
+        total *= i;
+    
 
     t += (clock() - start ) / (double) CLOCKS_PER_SEC;
-
     return t;
-
 }
 
-double jpTest2() {
+double jpTest2()
+{
     //Factorial using while loop
     static double t = 0.0;
-    int n = 0.0;
+    double n = 2000;
     int j = 1;
+    int total = 1;
     clock_t start;
     start = clock();
 
-    while (j <= n)
-        t *= j;
+    while (j <= n) {
+        total *= j;
+        j++;
+    }
         
     t += (clock() - start ) / (double) CLOCKS_PER_SEC;
     return t;
-
 }
 
 

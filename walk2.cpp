@@ -935,7 +935,6 @@ void render(void)
 	ggprint8b(&r, 16, c, "left arrow  <- walk left");
 	ggprint8b(&r, 16, c, "frame: %i", gl.walkFrame);
 	ggprint8b(&r, 16, c, "Time : %i", display_sec()); //KB
-	ggprint8b(&r, 16, c, "Function Time of KBdrawbox: %f", KBdrawBox());
 	ggprint8b(&r, 16, c, "p    Randi's Print To Console");
     ggprint8b(&r, 16, c, "Jordan's Time Funcs: %f,  %f", jpTest1(), jpTest2());
 	ggprint8b(&r, 16, c, "Randi's F(1) time: %f | F(2) time: %f", firstFunc(), secondFunc());

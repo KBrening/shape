@@ -130,7 +130,7 @@ double KBdrawBox ()
 
 
 //Puts player Into place in game
-/*void startingposition()
+void startingposition()
 {
 	glTranslated(gl.ball_pos[0], lev.tile_base+gl.ball_pos[1], 0);
 	glBegin(GL_QUADS);
@@ -140,5 +140,5 @@ double KBdrawBox ()
 		glVertex2i( 10, 0);
 	glEnd();
 	glPopMatrix();
-}*/
+}
 

@@ -24,7 +24,6 @@
 #include "log.h"
 //#include "ppm.h"
 #include "fonts.h"
-#include "time.h"
 
 //defined types
 typedef double Flt;
@@ -57,6 +56,7 @@ void render();
 //EXTERNAL FUNCTIONS
 extern int display_sec();
 extern double KBdrawBox();
+extern int KB_Level_Display();
 extern double jpTest1();
 extern double jpTest2();
 
@@ -729,7 +729,7 @@ void physics(void)
 
 void render(void)
 {
-	Rect r;
+    	Rect r;
 	//Clear the screen
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -761,7 +761,8 @@ void render(void)
 	}
 	
 
-	//
+	//KB_Level_Display();
+	
 	//========================
 	//Render the tile system
 	//========================
@@ -817,6 +818,7 @@ void render(void)
 	}
 	glColor3f(1.0, 1.0, 0.1);
 	glPushMatrix();
+
 	//put ball in its place
 	glTranslated(gl.ball_pos[0], lev.tile_base+gl.ball_pos[1], 0);
 	glBegin(GL_QUADS);
@@ -842,7 +844,9 @@ void render(void)
 	//
 	float h = 200.0;
 	float w = h * 0.5;
-	glPushMatrix();
+	
+	//-----------------------Disabled walking animation---------------------------
+	/*glPushMatrix();
 	glColor3f(1.0, 1.0, 1.0);
 	glBindTexture(GL_TEXTURE_2D, gl.walkTexture);
 	//
@@ -870,9 +874,10 @@ void render(void)
 	glEnd();
 	glPopMatrix();
 	glBindTexture(GL_TEXTURE_2D, 0);
-	glDisable(GL_ALPHA_TEST);
+	glDisable(GL_ALPHA_TEST);*/
 	//
 	//
+	//-----------------------------------------------------------------------------
 	if (gl.exp.onoff) {
 		h = 80.0;
 		w = 80.0;
@@ -936,7 +941,7 @@ void render(void)
 	ggprint8b(&r, 16, c, "frame: %i", gl.walkFrame);
 	ggprint8b(&r, 16, c, "Time : %i", display_sec()); //KB
 	ggprint8b(&r, 16, c, "p    Randi's Print To Console");
-    ggprint8b(&r, 16, c, "Jordan's Time Funcs: %f,  %f", jpTest1(), jpTest2());
+    	ggprint8b(&r, 16, c, "Jordan's Time Funcs: %f,  %f", jpTest1(), jpTest2());
 	ggprint8b(&r, 16, c, "Randi's F(1) time: %f | F(2) time: %f", firstFunc(), secondFunc());
 
 	if (gl.movie) {

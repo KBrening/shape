@@ -2,11 +2,11 @@
 //Simple timer class
 //Change if needed
 
-class Timer {
+class TimeMilli {
 	public:
 		int x;
 	
-	Timer() {
+	TimeMilli() {
 		x = 0;
 	}
 	int inc_timer() {

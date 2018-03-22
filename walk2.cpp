@@ -24,6 +24,7 @@
 #include "log.h"
 //#include "ppm.h"
 #include "fonts.h"
+//#include "level.h"
 
 //defined types
 typedef double Flt;
@@ -55,8 +56,11 @@ void render();
 //----------------------------------------------------------------------------
 //EXTERNAL FUNCTIONS
 extern int display_sec();
-extern double KBdrawBox();
-extern int KB_Level_Display();
+extern int display_milli();
+extern void KB_display_time(int y);
+extern void KB_pixel1(int j, int i,int tx,int ty,Flt dd,Flt offx,Flt offy,Flt ftsz);
+extern void KB_pixel2(int j, int i,int tx,int ty,Flt dd,Flt offx,Flt offy,Flt ftsz);
+extern void KB_pixel3(int j, int i,int tx,int ty,Flt dd,Flt offx,Flt offy,Flt ftsz);
 extern double jpTest1();
 extern double jpTest2();
 
@@ -134,7 +138,7 @@ public:
 		walk=0;
 		walkFrame=0;
 		walkImage=NULL;
-		MakeVector(ball_pos, 520.0, 0, 0);
+		MakeVector(ball_pos, 420.0, 0, 0);
 		MakeVector(ball_vel, 0, 0, 0);
 		delay = 0.1;
 		exp.onoff=0;
@@ -154,9 +158,23 @@ public:
 	}
 } gl;
 
+class State {
+public:
+	int state_of_game;
+
+	State() {
+		state_of_game = 0;
+	}
+
+	void set_state(int x) {
+		state_of_game = x;
+	}
+
+} state;
+
 class Level {
 public:
-	unsigned char arr[16][80];
+	unsigned char arr[16][100];
 	int nrows, ncols;
 	int tilesize[2];
 	Flt ftsz[2];
@@ -167,7 +185,7 @@ public:
 		tilesize[1] = 32;
 		ftsz[0] = (Flt)tilesize[0];
 		ftsz[1] = (Flt)tilesize[1];
-		tile_base = 220.0;
+		tile_base = 0.0;
 		//read level
 		FILE *fpi = fopen("level1.txt","r");
 		if (fpi) {
@@ -729,222 +747,212 @@ void physics(void)
 
 void render(void)
 {
-    	Rect r;
-	//Clear the screen
-	glClearColor(0.1, 0.1, 0.1, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT);
-	float cx = gl.xres/2.0;
-	float cy = gl.yres/2.0;
-	//
-	//show ground
-	glBegin(GL_QUADS);
-		glColor3f(0.2, 0.2, 0.2);
-		glVertex2i(0,       220);
-		glVertex2i(gl.xres, 220);
-		glColor3f(0.4, 0.4, 0.4);
-		glVertex2i(gl.xres,   0);
-		glVertex2i(0,         0);
-	glEnd();
-	//
-	//show boxes as background
-	for (int i=0; i<20; i++) {
-		glPushMatrix();
-		glTranslated(gl.box[i][0],gl.box[i][1],gl.box[i][2]);
-		glColor3f(0.2, 0.2, 0.2);
+	switch(state.state_of_game) {
+	    case 0:
+	    	Rect r;
+		//Clear the screen
+		glClearColor(0.1, 0.1, 0.1, 1.0);
+		glClear(GL_COLOR_BUFFER_BIT);
+		float cx = gl.xres/2.0;
+		float cy = gl.yres/2.0;
+		//
+		//show ground
 		glBegin(GL_QUADS);
-			glVertex2i( 0,  0);
-			glVertex2i( 0, 30);
-			glVertex2i(20, 30);
-			glVertex2i(20,  0);
+			glColor3f(0.2, 0.2, 0.2);
+			glVertex2i(0,       220);
+			glVertex2i(gl.xres, 220);
+			glColor3f(0.4, 0.4, 0.4);
+			glVertex2i(gl.xres,   0);
+			glVertex2i(0,         0);
+		glEnd();
+		//
+		//show boxes as background
+		for (int i=0; i<20; i++) {
+			glPushMatrix();
+			glTranslated(gl.box[i][0],gl.box[i][1],gl.box[i][2]);
+			glColor3f(0.2, 0.2, 0.2);
+			glBegin(GL_QUADS);
+				glVertex2i( 0,  0);
+				glVertex2i( 0, 30);
+				glVertex2i(20, 30);
+				glVertex2i(20,  0);
+			glEnd();
+			glPopMatrix();
+		}
+		
+		//========================
+		//Render the tile system
+		//========================
+		int tx = lev.tilesize[0];
+		int ty = lev.tilesize[1];
+		Flt dd = lev.ftsz[0];
+		Flt offy = lev.tile_base;
+		int ncols_to_render = gl.xres / lev.tilesize[0] + 2;
+		int col = (int)(gl.camera[0] / dd);
+		col = col % lev.ncols;
+		//Partial tile offset must be determined here.
+		//The leftmost tile might be partially off-screen.
+		//cdd: camera position in terms of tiles.
+		Flt cdd = gl.camera[0] / dd;
+		//flo: just the integer portion
+		Flt flo = floor(cdd);
+		//dec: just the decimal portion
+		Flt dec = (cdd - flo);
+		//offx: the offset to the left of the screen to start drawing tiles
+		Flt offx = -dec * dd;
+		//Log("gl.camera[0]: %lf   offx: %lf\n",gl.camera[0],offx);
+		for (int j=0; j<ncols_to_render; j++) {
+			int row = lev.nrows-1;
+			for (int i=0; i<lev.nrows; i++) {
+				if (lev.arr[row][col] == 'w') {
+					Flt hold = lev.ftsz[1];
+					KB_pixel1(j, i, tx, ty, dd, offx, offy, hold);
+				}
+				if (lev.arr[row][col] == 'b') {
+					Flt hold = lev.ftsz[1];
+					KB_pixel2(j, i, tx, ty, dd, offx, offy, hold);
+				}
+				if (lev.arr[row][col] == 'f') {
+					Flt hold = lev.ftsz[1];
+					KB_pixel3(j, i, tx, ty, dd, offx, offy, hold);
+				}
+				--row;
+			}
+			col = (col+1) % lev.ncols;
+		}
+		glColor3f(1.0, 1.0, 0.1);
+		glPushMatrix();
+
+		//put ball in its place
+		glTranslated(gl.ball_pos[0], lev.tile_base+gl.ball_pos[1], 0);
+		glBegin(GL_QUADS);
+			glVertex2i(-10, 0);
+			glVertex2i(-10, 20);
+			glVertex2i( 10, 20);
+			glVertex2i( 10, 0);
 		glEnd();
 		glPopMatrix();
-	}
-	
-
-	//KB_Level_Display();
-	
-	//========================
-	//Render the tile system
-	//========================
-	int tx = lev.tilesize[0];
-	int ty = lev.tilesize[1];
-	Flt dd = lev.ftsz[0];
-	Flt offy = lev.tile_base;
-	int ncols_to_render = gl.xres / lev.tilesize[0] + 2;
-	int col = (int)(gl.camera[0] / dd);
-	col = col % lev.ncols;
-	//Partial tile offset must be determined here.
-	//The leftmost tile might be partially off-screen.
-	//cdd: camera position in terms of tiles.
-	Flt cdd = gl.camera[0] / dd;
-	//flo: just the integer portion
-	Flt flo = floor(cdd);
-	//dec: just the decimal portion
-	Flt dec = (cdd - flo);
-	//offx: the offset to the left of the screen to start drawing tiles
-	Flt offx = -dec * dd;
-	//Log("gl.camera[0]: %lf   offx: %lf\n",gl.camera[0],offx);
-	for (int j=0; j<ncols_to_render; j++) {
-		int row = lev.nrows-1;
-		for (int i=0; i<lev.nrows; i++) {
-			if (lev.arr[row][col] == 'w') {
-				glColor3f(0.8, 0.8, 0.6);
-				glPushMatrix();
-				//put tile in its place
-				glTranslated((Flt)j*dd+offx, (Flt)i*lev.ftsz[1]+offy, 0);
-				glBegin(GL_QUADS);
-					glVertex2i( 0,  0);
-					glVertex2i( 0, ty);
-					glVertex2i(tx, ty);
-					glVertex2i(tx,  0);
-				glEnd();
-				glPopMatrix();
-			}
-			if (lev.arr[row][col] == 'b') {
-				glColor3f(0.9, 0.2, 0.2);
-				glPushMatrix();
-				glTranslated((Flt)j*dd+offx, (Flt)i*lev.ftsz[1]+offy, 0);
-				glBegin(GL_QUADS);
-					glVertex2i( 0,  0);
-					glVertex2i( 0, ty);
-					glVertex2i(tx, ty);
-					glVertex2i(tx,  0);
-				glEnd();
-				glPopMatrix();
-			}
-			--row;
-		}
-		col = (col+1) % lev.ncols;
-	}
-	glColor3f(1.0, 1.0, 0.1);
-	glPushMatrix();
-
-	//put ball in its place
-	glTranslated(gl.ball_pos[0], lev.tile_base+gl.ball_pos[1], 0);
-	glBegin(GL_QUADS);
-		glVertex2i(-10, 0);
-		glVertex2i(-10, 20);
-		glVertex2i( 10, 20);
-		glVertex2i( 10, 0);
-	glEnd();
-	glPopMatrix();
-	//--------------------------------------
-	//
-	//#define SHOW_FAKE_SHADOW
-	#ifdef SHOW_FAKE_SHADOW
-	glColor3f(0.25, 0.25, 0.25);
-	glBegin(GL_QUADS);
-		glVertex2i(cx-60, 150);
-		glVertex2i(cx+50, 150);
-		glVertex2i(cx+50, 130);
-		glVertex2i(cx-60, 130);
-	glEnd();
-	#endif
-	//
-	//
-	float h = 200.0;
-	float w = h * 0.5;
-	
-	//-----------------------Disabled walking animation---------------------------
-	/*glPushMatrix();
-	glColor3f(1.0, 1.0, 1.0);
-	glBindTexture(GL_TEXTURE_2D, gl.walkTexture);
-	//
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.0f);
-	glColor4ub(255,255,255,255);
-	int ix = gl.walkFrame % 8;
-	int iy = 0;
-	if (gl.walkFrame >= 8)
-		iy = 1;
-	float fx = (float)ix / 8.0;
-	float fy = (float)iy / 2.0;
-	glBegin(GL_QUADS);
-		if (gl.keys[XK_Left]) {
-			glTexCoord2f(fx+.125, fy+.5); glVertex2i(cx-w, cy-h);
-			glTexCoord2f(fx+.125, fy);    glVertex2i(cx-w, cy+h);
-			glTexCoord2f(fx,      fy);    glVertex2i(cx+w, cy+h);
-			glTexCoord2f(fx,      fy+.5); glVertex2i(cx+w, cy-h);
-		} else {
-			glTexCoord2f(fx,      fy+.5); glVertex2i(cx-w, cy-h);
-			glTexCoord2f(fx,      fy);    glVertex2i(cx-w, cy+h);
-			glTexCoord2f(fx+.125, fy);    glVertex2i(cx+w, cy+h);
-			glTexCoord2f(fx+.125, fy+.5); glVertex2i(cx+w, cy-h);
-		}
-	glEnd();
-	glPopMatrix();
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glDisable(GL_ALPHA_TEST);*/
-	//
-	//
-	//-----------------------------------------------------------------------------
-	if (gl.exp.onoff) {
-		h = 80.0;
-		w = 80.0;
-		glPushMatrix();
+		//--------------------------------------
+		//
+		//#define SHOW_FAKE_SHADOW
+		#ifdef SHOW_FAKE_SHADOW
+		glColor3f(0.25, 0.25, 0.25);
+		glBegin(GL_QUADS);
+			glVertex2i(cx-60, 150);
+			glVertex2i(cx+50, 150);
+			glVertex2i(cx+50, 130);
+			glVertex2i(cx-60, 130);
+		glEnd();
+		#endif
+		//
+		//
+		float h = 200.0;
+		float w = h * 0.5;
+		
+		//-----------------------Disabled walking animation---------------------------
+		/*glPushMatrix();
 		glColor3f(1.0, 1.0, 1.0);
-		glBindTexture(GL_TEXTURE_2D, gl.exp.tex);
+		glBindTexture(GL_TEXTURE_2D, gl.walkTexture);
+		//
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.0f);
 		glColor4ub(255,255,255,255);
-		glTranslated(gl.exp.pos[0], gl.exp.pos[1], gl.exp.pos[2]);
-		int ix = gl.exp.frame % 5;
-		int iy = gl.exp.frame / 5;
-		float tx = (float)ix / 5.0;
-		float ty = (float)iy / 5.0;
+		int ix = gl.walkFrame % 8;
+		int iy = 0;
+		if (gl.walkFrame >= 8)
+			iy = 1;
+		float fx = (float)ix / 8.0;
+		float fy = (float)iy / 2.0;
 		glBegin(GL_QUADS);
-			glTexCoord2f(tx,     ty+0.2); glVertex2i(cx-w, cy-h);
-			glTexCoord2f(tx,     ty);     glVertex2i(cx-w, cy+h);
-			glTexCoord2f(tx+0.2, ty);     glVertex2i(cx+w, cy+h);
-			glTexCoord2f(tx+0.2, ty+0.2); glVertex2i(cx+w, cy-h);
+			if (gl.keys[XK_Left]) {
+				glTexCoord2f(fx+.125, fy+.5); glVertex2i(cx-w, cy-h);
+				glTexCoord2f(fx+.125, fy);    glVertex2i(cx-w, cy+h);
+				glTexCoord2f(fx,      fy);    glVertex2i(cx+w, cy+h);
+				glTexCoord2f(fx,      fy+.5); glVertex2i(cx+w, cy-h);
+			} else {
+				glTexCoord2f(fx,      fy+.5); glVertex2i(cx-w, cy-h);
+				glTexCoord2f(fx,      fy);    glVertex2i(cx-w, cy+h);
+				glTexCoord2f(fx+.125, fy);    glVertex2i(cx+w, cy+h);
+				glTexCoord2f(fx+.125, fy+.5); glVertex2i(cx+w, cy-h);
+			}
 		glEnd();
 		glPopMatrix();
 		glBindTexture(GL_TEXTURE_2D, 0);
-		glDisable(GL_ALPHA_TEST);
-	}
-	//
-	//
-	if (gl.exp44.onoff) {
-		h = 80.0;
-		w = 80.0;
-		glPushMatrix();
-		glColor3f(1.0, 1.0, 1.0);
-		glBindTexture(GL_TEXTURE_2D, gl.exp44.tex);
-		glEnable(GL_ALPHA_TEST);
-		glAlphaFunc(GL_GREATER, 0.0f);
-		glColor4ub(255,255,255,255);
-		glTranslated(gl.exp44.pos[0], gl.exp44.pos[1], gl.exp44.pos[2]);
-		int ix = gl.exp44.frame % 4;
-		int iy = gl.exp44.frame / 4;
-		float tx = (float)ix / 4.0;
-		float ty = (float)iy / 4.0;
-		glBegin(GL_QUADS);
-			glTexCoord2f(tx,      ty+0.25); glVertex2i(cx-w, cy-h);
-			glTexCoord2f(tx,      ty);      glVertex2i(cx-w, cy+h);
-			glTexCoord2f(tx+0.25, ty);      glVertex2i(cx+w, cy+h);
-			glTexCoord2f(tx+0.25, ty+0.25); glVertex2i(cx+w, cy-h);
-		glEnd();
-		glPopMatrix();
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glDisable(GL_ALPHA_TEST);
-	}
-	unsigned int c = 0x00ffff44;
-	r.bot = gl.yres - 20;
-	r.left = 10;
-	r.center = 0;
-	ggprint8b(&r, 16, c, "W   Walk cycle");
-	ggprint8b(&r, 16, c, "E   Explosion");
-	ggprint8b(&r, 16, c, "+   faster");
-	ggprint8b(&r, 16, c, "-   slower");
-	ggprint8b(&r, 16, c, "right arrow -> walk right");
-	ggprint8b(&r, 16, c, "left arrow  <- walk left");
-	ggprint8b(&r, 16, c, "frame: %i", gl.walkFrame);
-	ggprint8b(&r, 16, c, "Time : %i", display_sec()); //KB
-	ggprint8b(&r, 16, c, "p    Randi's Print To Console");
-    	ggprint8b(&r, 16, c, "Jordan's Time Funcs: %f,  %f", jpTest1(), jpTest2());
-	ggprint8b(&r, 16, c, "Randi's F(1) time: %f | F(2) time: %f", firstFunc(), secondFunc());
+		glDisable(GL_ALPHA_TEST);*/
+		//
+		//
+		//-----------------------------------------------------------------------------
+		if (gl.exp.onoff) {
+			h = 80.0;
+			w = 80.0;
+			glPushMatrix();
+			glColor3f(1.0, 1.0, 1.0);
+			glBindTexture(GL_TEXTURE_2D, gl.exp.tex);
+			glEnable(GL_ALPHA_TEST);
+			glAlphaFunc(GL_GREATER, 0.0f);
+			glColor4ub(255,255,255,255);
+			glTranslated(gl.exp.pos[0], gl.exp.pos[1], gl.exp.pos[2]);
+			int ix = gl.exp.frame % 5;
+			int iy = gl.exp.frame / 5;
+			float tx = (float)ix / 5.0;
+			float ty = (float)iy / 5.0;
+			glBegin(GL_QUADS);
+				glTexCoord2f(tx,     ty+0.2); glVertex2i(cx-w, cy-h);
+				glTexCoord2f(tx,     ty);     glVertex2i(cx-w, cy+h);
+				glTexCoord2f(tx+0.2, ty);     glVertex2i(cx+w, cy+h);
+				glTexCoord2f(tx+0.2, ty+0.2); glVertex2i(cx+w, cy-h);
+			glEnd();
+			glPopMatrix();
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glDisable(GL_ALPHA_TEST);
+		}
+		//
+		//
+		if (gl.exp44.onoff) {
+			h = 80.0;
+			w = 80.0;
+			glPushMatrix();
+			glColor3f(1.0, 1.0, 1.0);
+			glBindTexture(GL_TEXTURE_2D, gl.exp44.tex);
+			glEnable(GL_ALPHA_TEST);
+			glAlphaFunc(GL_GREATER, 0.0f);
+			glColor4ub(255,255,255,255);
+			glTranslated(gl.exp44.pos[0], gl.exp44.pos[1], gl.exp44.pos[2]);
+			int ix = gl.exp44.frame % 4;
+			int iy = gl.exp44.frame / 4;
+			float tx = (float)ix / 4.0;
+			float ty = (float)iy / 4.0;
+			glBegin(GL_QUADS);
+				glTexCoord2f(tx,      ty+0.25); glVertex2i(cx-w, cy-h);
+				glTexCoord2f(tx,      ty);      glVertex2i(cx-w, cy+h);
+				glTexCoord2f(tx+0.25, ty);      glVertex2i(cx+w, cy+h);
+				glTexCoord2f(tx+0.25, ty+0.25); glVertex2i(cx+w, cy-h);
+			glEnd();
+			glPopMatrix();
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glDisable(GL_ALPHA_TEST);
+		}
+		unsigned int c = 0x00ffff44;
+		r.bot = gl.yres - 20;
+		r.left = 10;
+		r.center = 0;
+		
+		KB_display_time(gl.yres);
+		
+		ggprint8b(&r, 16, c, "W   Walk cycle");
+		ggprint8b(&r, 16, c, "E   Explosion");
+		ggprint8b(&r, 16, c, "+   faster");
+		ggprint8b(&r, 16, c, "-   slower");
+		ggprint8b(&r, 16, c, "right arrow -> walk right");
+		ggprint8b(&r, 16, c, "left arrow  <- walk left");
+		ggprint8b(&r, 16, c, "frame: %i", gl.walkFrame);
+		//ggprint8b(&r, 16, c, "Time : %i %i", display_sec(), display_milli()); //KB
+		ggprint8b(&r, 16, c, "p    Randi's Print To Console");
+		ggprint8b(&r, 16, c, "Jordan's Time Funcs: %f,  %f", jpTest1(), jpTest2());
+		ggprint8b(&r, 16, c, "Randi's F(1) time: %f | F(2) time: %f", firstFunc(), secondFunc());
 
-	if (gl.movie) {
-		screenCapture();
+		if (gl.movie) {
+			screenCapture();
+		}
 	}
 }

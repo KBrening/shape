@@ -1,6 +1,6 @@
 //Project: Shape
 //Name: Keelan Brening
-//Last Modified: 2/25/18
+//Last Modified: 3/22/18
 
 #include "time.h"
 #include "fonts.h"
@@ -20,31 +20,52 @@ class kb_set_time
 	public:
 		TimeMilli t;
 		int sec_count;
-		int min_count;
+		int milli_count;
 		int holder;	
 	kb_set_time() {
 		sec_count = 0;
-		min_count = 0;
+		milli_count = 0;
 		holder = 0;
 	}
 	int kb_sec() {
-		if (sec_count == 59) {
-			sec_count = 0;
-			min_count += 1;
+	    	milli_count = t.inc_timer();
+
+	    	if (milli_count == 59)
+		{
+	    		t.reset();
+			milli_count = 0;
+			sec_count = sec_count + 1;
 		}
-		else
-			sec_count = t.inc_timer();
 
 		return sec_count;
 	}
-	int kb_min() {
-		return min_count;
+	int kb_milli() {
+		if (milli_count == 59)
+		{
+			milli_count = 0;
+		}
+		return milli_count;
 	}
 }distimer;
 
 int display_sec ()
 {
 	return distimer.kb_sec();
+}
+
+int display_milli()
+{
+	return distimer.kb_milli();
+}
+
+void KB_display_time(int y)
+{
+	Rect r;
+	unsigned int c = 0x00ffff44;
+	r.bot = y - 20;
+	r.left = 400;
+	r.center = 0;
+	ggprint8b(&r, 16, c, "Time : %i %i", display_sec(), display_milli());
 }
 
 /*This is an example of how to time functions
@@ -69,76 +90,47 @@ double KBdrawBox ()
 	return total;
 }*/
 
-// This is test code for the level system for our game
-//========================
-//Render the tile system
-//========================
-/*void KB_Level_Display() {
-	int tx = lev.tilesize[0];
-	int ty = lev.tilesize[1];
-	Flt dd = lev.ftsz[0];
-	Flt offy = lev.tile_base;
-	int ncols_to_render = gl.xres / lev.tilesize[0] + 2;
-	int col = (int)(gl.camera[0] / dd);
-	col = col % lev.ncols;
-	//Partial tile offset must be determined here.
-	//The leftmost tile might be partially off-screen.
-	//cdd: camera position in terms of tiles.
-	Flt cdd = gl.camera[0] / dd;
-	//flo: just the integer portion
-	Flt flo = floor(cdd);
-	//dec: just the decimal portion
-	Flt dec = (cdd - flo);
-	//offx: the offset to the left of the screen to start drawing tiles
-	Flt offx = -dec * dd;
-	//Log("gl.camera[0]: %lf   offx: %lf\n",gl.camera[0],offx);
-	for (int j=0; j<ncols_to_render; j++) {
-		int row = lev.nrows-1;
-		for (int i=0; i<lev.nrows; i++) {
-			if (lev.arr[row][col] == 'w') {
-				glColor3f(0.8, 0.8, 0.6);
-				glPushMatrix();
-				//put tile in its place
-				glTranslated((Flt)j*dd+offx, (Flt)i*lev.ftsz[1]+offy, 0);
-				glBegin(GL_QUADS);
-					glVertex2i( 0,  0);
-					glVertex2i( 0, ty);
-					glVertex2i(tx, ty);
-					glVertex2i(tx,  0);
-				glEnd();
-				glPopMatrix();
-			}
-			if (lev.arr[row][col] == 'b') {
-				glColor3f(0.9, 0.2, 0.2);
-				glPushMatrix();
-				glTranslated((Flt)j*dd+offx, (Flt)i*lev.ftsz[1]+offy, 0);
-				glBegin(GL_QUADS);
-					glVertex2i( 0,  0);
-					glVertex2i( 0, ty);
-					glVertex2i(tx, ty);
-					glVertex2i(tx,  0);
-				glEnd();
-				glPopMatrix();
-			}
-			--row;
-		}
-	col = (col+1) % lev.ncols;
-	}
-	glColor3f(1.0, 1.0, 0.1);
-	glPushMatrix();
-}*/
-
-
-//Puts player Into place in game
-/*void startingposition()
+//--------------------------------------------------------------------------------------------
+// These are the color for the pixels in out game
+//
+void KB_pixel1(int j, int i, int tx, int ty,Flt dd, Flt offx, Flt offy, Flt ftsz)
 {
-	glTranslated(gl.ball_pos[0], lev.tile_base+gl.ball_pos[1], 0);
+	glColor3f(0.8, 0.8, 0.6);
+	glPushMatrix();
+	glTranslated((Flt)j*dd+offx, (Flt)i*ftsz+offy, 0);
 	glBegin(GL_QUADS);
-		glVertex2i(-10, 0);
-		glVertex2i(-10, 20);
-		glVertex2i( 10, 20);
-		glVertex2i( 10, 0);
+		glVertex2i( 0,  0);
+		glVertex2i( 0, ty);
+		glVertex2i(tx, ty);
+		glVertex2i(tx,  0);
 	glEnd();
 	glPopMatrix();
-}*/
-
+}
+void KB_pixel2(int j, int i, int tx, int ty, Flt dd, Flt offx, Flt offy, Flt ftsz) 
+{
+	glColor3f(0.9, 0.2, 0.2);
+	glPushMatrix();
+	glTranslated((Flt)j*dd+offx, (Flt)i*ftsz+offy, 0);
+	glBegin(GL_QUADS);
+		glVertex2i( 0,  0);
+		glVertex2i( 0, ty);
+		glVertex2i(tx, ty);
+		glVertex2i(tx,  0);
+	glEnd();
+	glPopMatrix();
+}
+//This indicates the finish line for the level
+void KB_pixel3(int j, int i, int tx, int ty, Flt dd, Flt offx, Flt offy, Flt ftsz) 
+{
+	glColor3f(0.9, 0.9, 0.9);
+	glPushMatrix();
+	glTranslated((Flt)j*dd+offx, (Flt)i*ftsz+offy, 0);
+	glBegin(GL_QUADS);
+		glVertex2i( 0,  0);
+		glVertex2i( 0, ty);
+		glVertex2i(tx, ty);
+		glVertex2i(tx,  0);
+	glEnd();
+	glPopMatrix();
+}
+//---------------------------------------------------------------------------------------------

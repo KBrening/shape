@@ -535,7 +535,7 @@ void screenCapture()
 		vid = 1;
 	}
 	unsigned char *data = (unsigned char *)malloc(gl.xres * gl.yres * 3);
-    glReadPixels(0, 0, gl.xres, gl.yres, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glReadPixels(0, 0, gl.xres, gl.yres, GL_RGB, GL_UNSIGNED_BYTE, data);
 	char ts[32];
 	sprintf(ts, "./vid/pic%03i.ppm", fnum);
 	FILE *fpo = fopen(ts,"w");	

@@ -237,7 +237,7 @@ public:
 	void setTitle() {
 		//Set the window title bar.
 		XMapWindow(dpy, win);
-		XStoreName(dpy, win, "3350 - Walk Cycle");
+		XStoreName(dpy, win, "Shapes");
 	}
 	void setupScreenRes(const int w, const int h) {
 		gl.xres = w;
@@ -672,15 +672,15 @@ void physics(void)
 				if (gl.box[i][0] > gl.xres + 10.0)
 					gl.box[i][0] -= gl.xres + 10.0;
 				gl.camera[0] -= 2.0/lev.tilesize[0] * (0.05 / gl.delay);
-				if (gl.camera[0] < 0.0)
+				if (gl.camera[0] < 0.0)	//THIS IS LEFT MOST LEVEL LIMIT
 					gl.camera[0] = 0.0;
 			} else {
 				gl.box[i][0] -= 1.0 * (0.05 / gl.delay);
 				if (gl.box[i][0] < -10.0)
 					gl.box[i][0] += gl.xres + 10.0;
 				gl.camera[0] += 2.0/lev.tilesize[0] * (0.05 / gl.delay);
-				if (gl.camera[0] < 0.0)
-					gl.camera[0] = 0.0;
+				if (gl.camera[0] > (lev.tilesize[0] * 80)) //THIS IS RIGHT NOW LEVEL LIMIT
+					gl.camera[0] = (lev.tilesize[0] * 80);
 			}
 		}
 		if (gl.exp.onoff) {

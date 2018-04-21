@@ -63,6 +63,10 @@ extern void KB_pixel2(int j, int i,int tx,int ty,Flt dd,Flt offx,Flt offy,Flt ft
 extern void KB_pixel3(int j, int i,int tx,int ty,Flt dd,Flt offx,Flt offy,Flt ftsz);
 extern double jpTest1();
 extern double jpTest2();
+extern void drawCircle(float radius);
+extern void drawSquare(int sideLength);
+extern void drawKite(int baseModifier);
+extern void drawStar(int scale);
 
 //-----------------------------------------------------------------------------
 //Setup timers
@@ -123,6 +127,7 @@ public:
 	Sprite exp44;
 	Vec ball_pos;
 	Vec ball_vel;
+	int shapeSelect;
 	//camera is centered at (0,0) lower-left of screen. 
 	Flt camera[2];
 	~Global() {
@@ -155,6 +160,7 @@ public:
 			box[i][2] = 0.0;
 		}
 		memset(keys, 0, 65536);
+		shapeSelect = 1;
 	}
 } gl;
 
@@ -626,6 +632,18 @@ int checkKeys(XEvent *e)
 		case XK_minus:
 			gl.delay += 0.005;
 			break;
+		case XK_1:
+			gl.shapeSelect = 1;
+			break;
+		case XK_2:
+			gl.shapeSelect = 2;
+			break;
+		case XK_3:
+			gl.shapeSelect = 3;
+			break;
+		case XK_4:
+			gl.shapeSelect = 4;
+			break;
 		case XK_Escape:
 			return 1;
 			break;
@@ -822,15 +840,15 @@ void render(void)
 		}
 		glColor3f(1.0, 1.0, 0.1);
 		glPushMatrix();
-
-		//put ball in its place
 		glTranslated(gl.ball_pos[0], lev.tile_base+gl.ball_pos[1], 0);
-		glBegin(GL_QUADS);
-			glVertex2i(-10, 0);
-			glVertex2i(-10, 20);
-			glVertex2i( 10, 20);
-			glVertex2i( 10, 0);
-		glEnd();
+		if (gl.shapeSelect == 1) 
+			drawCircle(16.0);
+		else if (gl.shapeSelect == 2)
+			drawSquare(16);
+		else if (gl.shapeSelect == 3)
+			drawKite(16);
+		else if(gl.shapeSelect == 4)
+			drawStar(3);
 		glPopMatrix();
 		//--------------------------------------
 		//
@@ -946,10 +964,11 @@ void render(void)
 		ggprint8b(&r, 16, c, "right arrow -> walk right");
 		ggprint8b(&r, 16, c, "left arrow  <- walk left");
 		ggprint8b(&r, 16, c, "frame: %i", gl.walkFrame);
+		ggprint8b(&r, 16, c, "1-Circle 2-Square 3-Kite 4-Star");
 		//ggprint8b(&r, 16, c, "Time : %i %i", display_sec(), display_milli()); //KB
-		ggprint8b(&r, 16, c, "p    Randi's Print To Console");
-		ggprint8b(&r, 16, c, "Jordan's Time Funcs: %f,  %f", jpTest1(), jpTest2());
-		ggprint8b(&r, 16, c, "Randi's F(1) time: %f | F(2) time: %f", firstFunc(), secondFunc());
+		//ggprint8b(&r, 16, c, "p    Randi's Print To Console");
+		//ggprint8b(&r, 16, c, "Jordan's Time Funcs: %f,  %f", jpTest1(), jpTest2());
+		//ggprint8b(&r, 16, c, "Randi's F(1) time: %f | F(2) time: %f", firstFunc(), secondFunc());
 
 		if (gl.movie) {
 			screenCapture();

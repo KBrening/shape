@@ -130,10 +130,10 @@ void KB_pixel5(int j, int i, int tx, int ty, Flt dd, Flt offx, Flt offy, Flt fts
 	glPushMatrix();
 	glTranslated((Flt)j*dd+offx, (Flt)i*ftsz+offy, 0);
 	glBegin(GL_QUADS);
+		glVertex2i( tx/4,  0);
+		glVertex2i( tx, 0);
+		glVertex2i( 0, ty/3);//ty);
 		glVertex2i( 0,  0);
-		glVertex2i( tx/2, ty/2);
-		glVertex2i(tx/2, 0);//ty);
-		glVertex2i(tx/2,  0);
 	glEnd();
 	glPopMatrix();
 }

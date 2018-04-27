@@ -61,8 +61,6 @@ extern void KB_display_time(int y);
 extern void KB_pixel1(int j, int i,int tx,int ty,Flt dd,Flt offx,Flt offy,Flt ftsz);
 extern void KB_pixel2(int j, int i,int tx,int ty,Flt dd,Flt offx,Flt offy,Flt ftsz);
 extern void KB_pixel3(int j, int i,int tx,int ty,Flt dd,Flt offx,Flt offy,Flt ftsz);
-extern void KB_pixel4(int j, int i,int tx,int ty,Flt dd,Flt offx,Flt offy,Flt ftsz);
-extern void KB_pixel5(int j, int i,int tx,int ty,Flt dd,Flt offx,Flt offy,Flt ftsz);
 extern double jpTest1();
 extern double jpTest2();
 extern void drawCircle(float radius);
@@ -835,14 +833,6 @@ void render(void)
 				if (lev.arr[row][col] == 'f') {
 					Flt hold = lev.ftsz[1];
 					KB_pixel3(j, i, tx, ty, dd, offx, offy, hold);
-				}
-				if (lev.arr[row][col] == 's') {
-					Flt hold = lev.ftsz[1];
-					KB_pixel4(j, i, tx, ty, dd, offx, offy, hold);
-				}
-				if (lev.arr[row][col] == 'v') {
-					Flt hold = lev.ftsz[1];
-					KB_pixel5(j, i, tx, ty, dd, offx, offy, hold);
 				}
 				--row;
 			}

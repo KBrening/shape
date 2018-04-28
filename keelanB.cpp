@@ -67,6 +67,29 @@ void KB_display_time(int y)
 	r.center = 0;
 	ggprint8b(&r, 16, c, "Time : %i %i", display_sec(), display_milli());
 }
+
+/*This is an example of how to time functions
+double KBdrawBox ()
+{
+	static clock_t start, end;
+	static float total = 0;
+	start = clock();
+    	glColor3ub(255,0,0);
+	glPushMatrix();
+	glTranslatef(500.0,500.0,0.0);
+	glBegin(GL_QUADS);
+		glVertex2i( 0, 0);
+		glVertex2i( 0, 100);
+		glVertex2i( 100, 100);
+		glVertex2i( 100, 0);
+	glEnd();
+	glPopMatrix();
+	end=clock();
+	float sec = ((float)end - (float)start)/CLOCKS_PER_SEC;
+	total +=sec;
+	return total;
+}*/
+
 //--------------------------------------------------------------------------------------------
 // These are the color for the pixels in out game
 //
@@ -111,6 +134,7 @@ void KB_pixel3(int j, int i, int tx, int ty, Flt dd, Flt offx, Flt offy, Flt fts
 	glPopMatrix();
 }
 //---------------------------------------------------------------------------------------------
+<<<<<<< HEAD
 void KB_pixel4(int j, int i, int tx, int ty, Flt dd, Flt offx, Flt offy, Flt ftsz) 
 {
 	glColor3f(0.9, 0.2, 0.2);
@@ -137,3 +161,5 @@ void KB_pixel5(int j, int i, int tx, int ty, Flt dd, Flt offx, Flt offy, Flt fts
 	glEnd();
 	glPopMatrix();
 }
+=======
+>>>>>>> origin/master

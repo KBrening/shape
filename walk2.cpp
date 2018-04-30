@@ -58,9 +58,7 @@ void render();
 extern int display_sec();
 extern int display_milli();
 extern void KB_display_time(int y);
-extern void KB_pixel1(int j, int i,int tx,int ty,Flt dd,Flt offx,Flt offy,Flt ftsz);
-extern void KB_pixel2(int j, int i,int tx,int ty,Flt dd,Flt offx,Flt offy,Flt ftsz);
-extern void KB_pixel3(int j, int i,int tx,int ty,Flt dd,Flt offx,Flt offy,Flt ftsz);
+extern void KB_pixel(int num, int j, int i,int tx,int ty,Flt dd,Flt offx,Flt offy,Flt ftsz);
 extern double jpTest1();
 extern double jpTest2();
 extern void drawCircle(float radius);
@@ -824,15 +822,39 @@ void render(void)
 			for (int i=0; i<lev.nrows; i++) {
 				if (lev.arr[row][col] == 'w') {
 					Flt hold = lev.ftsz[1];
-					KB_pixel1(j, i, tx, ty, dd, offx, offy, hold);
+					KB_pixel(1, j, i, tx, ty, dd, offx, offy, hold);
 				}
 				if (lev.arr[row][col] == 'b') {
 					Flt hold = lev.ftsz[1];
-					KB_pixel2(j, i, tx, ty, dd, offx, offy, hold);
+					KB_pixel(2, j, i, tx, ty, dd, offx, offy, hold);
 				}
 				if (lev.arr[row][col] == 'f') {
 					Flt hold = lev.ftsz[1];
-					KB_pixel3(j, i, tx, ty, dd, offx, offy, hold);
+					KB_pixel(3, j, i, tx, ty, dd, offx, offy, hold);
+				}
+				if (lev.arr[row][col] == 'm') {
+					Flt hold = lev.ftsz[1];
+					KB_pixel(5, j, i, tx, ty, dd, offx, offy, hold);
+				}
+				if (lev.arr[row][col] == 'n') {
+					Flt hold = lev.ftsz[1];
+					KB_pixel(4, j, i, tx, ty, dd, offx, offy, hold);
+				}
+				if (lev.arr[row][col] == 'o') {
+					Flt hold = lev.ftsz[1];
+					KB_pixel(6, j, i, tx, ty, dd, offx, offy, hold);
+				}
+				if (lev.arr[row][col] == 'p') {
+					Flt hold = lev.ftsz[1];
+					KB_pixel(7, j, i, tx, ty, dd, offx, offy, hold);
+				}
+				if (lev.arr[row][col] == 'q') {
+					Flt hold = lev.ftsz[1];
+					KB_pixel(8, j, i, tx, ty, dd, offx, offy, hold);
+				}
+				if (lev.arr[row][col] == 'r') {
+					Flt hold = lev.ftsz[1];
+					KB_pixel(9, j, i, tx, ty, dd, offx, offy, hold);
 				}
 				--row;
 			}

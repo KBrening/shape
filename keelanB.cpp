@@ -68,69 +68,83 @@ void KB_display_time(int y)
 	ggprint8b(&r, 16, c, "Time : %i %i", display_sec(), display_milli());
 }
 
-/*This is an example of how to time functions
-double KBdrawBox ()
+void KB_pixel (int num, int j, int i, int tx, int ty, Flt dd, Flt offx, Flt offy, Flt ftsz) 
 {
-	static clock_t start, end;
-	static float total = 0;
-	start = clock();
-    	glColor3ub(255,0,0);
+	switch (num) {
+	    case 1:
+	    	glColor3f(0.9, 0.8, 0.8);	//bottom layer
+	    	break;
+	    case 2:
+	    	glColor3f(0.9, 0.2, 0.2);	//normal
+	    	break;
+	    case 3:
+	    	glColor3f(0.9, 0.9, 0.9);	//finish
+		break;
+	    case 4:
+	    case 5:
+	    case 6:
+	    case 7:
+	    case 8:
+	    case 9:
+	    	glColor3f(0.9, 0.2, 0.2);
+		break;
+	}
+	
 	glPushMatrix();
-	glTranslatef(500.0,500.0,0.0);
-	glBegin(GL_QUADS);
-		glVertex2i( 0, 0);
-		glVertex2i( 0, 100);
-		glVertex2i( 100, 100);
-		glVertex2i( 100, 0);
+	glTranslated((Flt)j*dd+offx, (Flt)i*ftsz+offy, 0);
+	
+	switch (num) {
+		case 1: 				//1-3 are squares
+		case 2:
+		case 3:
+			glBegin(GL_QUADS);	
+		    		glVertex2i( 0,  0);
+				glVertex2i( 0, ty);
+				glVertex2i(tx, ty);
+				glVertex2i(tx,  0);
+			break;
+		case 4:					//4 is the start curve to flat
+			glBegin(GL_QUADS);	
+				glVertex2i( 0,  0);
+				glVertex2i( 0, ty);
+				glVertex2i(tx, ty/3);
+				glVertex2i(tx,  0);
+			break;
+		case 5:					//5 is end curve to flat
+			glBegin(GL_QUADS);	
+				glVertex2i( 0,  0);
+				glVertex2i( tx/4, 0);
+				glVertex2i( tx, 0);
+				glVertex2i( 0,  ty/3);
+			break;
+		case 6:					//6 is 90 degree slant down
+			glBegin(GL_QUADS);	
+				glVertex2i( 0,  0);
+				glVertex2i( tx, 0);
+				glVertex2i( tx, 0);
+				glVertex2i( 0,  ty);
+			break;
+		case 7:					//7 is start curve to up
+			glBegin(GL_TRIANGLES);	
+				glVertex2i( tx,  0);
+				glVertex2i( tx, ty/3);
+				glVertex2i( 0, 0 );
+			break;
+		case 8:					//8 is end curve to up
+			glBegin(GL_QUADS);	
+				glVertex2i( tx,  0);
+				glVertex2i( tx, ty);
+				glVertex2i( 0, ty/3);
+				glVertex2i( 0, 0);
+			break;
+		case 9:					//9 is 90 degree up
+			glBegin(GL_TRIANGLES);	
+				glVertex2i( tx,  0);
+				glVertex2i( tx, ty);
+				glVertex2i( 0, 0);
+			break;
+	}
 	glEnd();
 	glPopMatrix();
-	end=clock();
-	float sec = ((float)end - (float)start)/CLOCKS_PER_SEC;
-	total +=sec;
-	return total;
-}*/
+}
 
-//--------------------------------------------------------------------------------------------
-// These are the color for the pixels in out game
-//
-void KB_pixel1(int j, int i, int tx, int ty,Flt dd, Flt offx, Flt offy, Flt ftsz)
-{
-	glColor3f(0.8, 0.8, 0.6);
-	glPushMatrix();
-	glTranslated((Flt)j*dd+offx, (Flt)i*ftsz+offy, 0);
-	glBegin(GL_QUADS);
-		glVertex2i( 0,  0);
-		glVertex2i( 0, ty);
-		glVertex2i(tx, ty);
-		glVertex2i(tx,  0);
-	glEnd();
-	glPopMatrix();
-}
-void KB_pixel2(int j, int i, int tx, int ty, Flt dd, Flt offx, Flt offy, Flt ftsz) 
-{
-	glColor3f(0.9, 0.2, 0.2);
-	glPushMatrix();
-	glTranslated((Flt)j*dd+offx, (Flt)i*ftsz+offy, 0);
-	glBegin(GL_QUADS);
-		glVertex2i( 0,  0);
-		glVertex2i( 0, ty);
-		glVertex2i(tx, ty);
-		glVertex2i(tx,  0);
-	glEnd();
-	glPopMatrix();
-}
-//This indicates the finish line for the level
-void KB_pixel3(int j, int i, int tx, int ty, Flt dd, Flt offx, Flt offy, Flt ftsz) 
-{
-	glColor3f(0.9, 0.9, 0.9);
-	glPushMatrix();
-	glTranslated((Flt)j*dd+offx, (Flt)i*ftsz+offy, 0);
-	glBegin(GL_QUADS);
-		glVertex2i( 0,  0);
-		glVertex2i( 0, ty);
-		glVertex2i(tx, ty);
-		glVertex2i(tx,  0);
-	glEnd();
-	glPopMatrix();
-}
-//---------------------------------------------------------------------------------------------

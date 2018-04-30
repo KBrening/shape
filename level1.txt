@@ -1,9 +1,9 @@
-                                        bbbbbbbb                                             
-                                    bbbbbb                                             ffff  
-                                bbbbbbbb                                             bbbbbbbb
-bbbbbbbbbbbbbb              bbbbbbbbbb                                           bbbbbbbbbbbb
-bb  bb  bb  bb          bbbbbbbbbbbb                    b   b   b   b          bbbbbbbbbbbbbb
-bbbbbbbbbbbbbb          bbbbbbbbbbbbbbbbbbbbbbbbbbbbb  bbb bbb bbb bbb        bbbbbbbbbbbbbbb
-bbbbbbbbbbbbbb          bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
-wwwwwwwwwwwwwwwwwwww    wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
-wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+                                                     o                                       
+         bbbbbo                     o                bo                  o       r       ffff  
+         bbbbbbo                    bo       r       bbo          r      bnm   pqb       bbbbb
+bbbbbbbbbbbbbbbbo          r        bbnm   pqb       bbbo        rb      bbbbbbbbb       bbbbb
+bb  bb  bb  bbbbbo        rb        bbbbbbbbbb       bbbbo      rbb      bbbbbbbbb       bbbbb
+bbbbbbbbbbbbbbbbbbo      rbb        bbbbbbbbbb       bbbbbnm  pqbbb      bbbbbbbbb       bbbbb
+bbbbbbbbbbbbbbbbbbbnm  pqbbb        bbbbbbbbbb       bbbbbbbbbbbbbb      bbbbbbbbb       bbbbb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww

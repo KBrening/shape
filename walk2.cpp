@@ -59,6 +59,8 @@ extern int display_sec();
 extern int display_milli();
 extern void KB_display_time(int y);
 extern void KB_pixel(int num, int j, int i,int tx,int ty,Flt dd,Flt offx,Flt offy,Flt ftsz);
+extern void KB_OutOfBound();
+extern void KB_offscreen();
 extern double jpTest1();
 extern double jpTest2();
 extern void drawCircle(float radius);
@@ -586,66 +588,77 @@ int checkKeys(XEvent *e)
 		return 0;
 	}
 	(void)shift;
-	switch (key) {
-		case XK_s:
-			screenCapture();
+	switch (state.state_of_game) {
+	    	case 0:	
+	    		switch (key) {
+		    		case XK_s:
+					screenCapture();
+					break;
+				case XK_m:
+					gl.movie ^= 1;
+					break;
+				case XK_w:
+					timers.recordTime(&timers.walkTime);
+					gl.walk ^= 1;
+					break;
+				case XK_e:
+					gl.exp.pos[0] = 200.0;
+					gl.exp.pos[1] = -60.0;
+					gl.exp.pos[2] =   0.0;
+					timers.recordTime(&gl.exp.time);
+					gl.exp.onoff ^= 1;
+					break;
+				case XK_f:
+					gl.exp44.pos[0] = 200.0;
+					gl.exp44.pos[1] = -60.0;
+					gl.exp44.pos[2] =   0.0;
+					timers.recordTime(&gl.exp44.time);
+					gl.exp44.onoff ^= 1;
+					break;
+				case XK_p:
+					printToConsole();
+					break;
+				case XK_Left:
+					break;
+				case XK_Right:
+					break;
+				case XK_Up:
+					break;
+				case XK_Down:
+					break;
+				case XK_equal:
+					gl.delay -= 0.005;
+					if (gl.delay < 0.005)
+						gl.delay = 0.005;
+					break;
+				case XK_minus:
+					gl.delay += 0.005;
+					break;
+				case XK_1:
+					gl.shapeSelect = 1;
+					break;
+				case XK_2:
+					gl.shapeSelect = 2;
+					break;
+				case XK_3:
+					gl.shapeSelect = 3;
+					break;
+				case XK_4:
+					gl.shapeSelect = 4;
+					break;
+				case XK_Escape:
+					return 1;
+					break;
+			    }
 			break;
-		case XK_m:
-			gl.movie ^= 1;
+	    	case 1:
+			switch (key) {
+			    case XK_Escape:
+				return 1;
+				break;
+			}
 			break;
-		case XK_w:
-			timers.recordTime(&timers.walkTime);
-			gl.walk ^= 1;
-			break;
-		case XK_e:
-			gl.exp.pos[0] = 200.0;
-			gl.exp.pos[1] = -60.0;
-			gl.exp.pos[2] =   0.0;
-			timers.recordTime(&gl.exp.time);
-			gl.exp.onoff ^= 1;
-			break;
-		case XK_f:
-			gl.exp44.pos[0] = 200.0;
-			gl.exp44.pos[1] = -60.0;
-			gl.exp44.pos[2] =   0.0;
-			timers.recordTime(&gl.exp44.time);
-			gl.exp44.onoff ^= 1;
-			break;
-		case XK_p:
-			printToConsole();
-			break;
-		case XK_Left:
-			break;
-		case XK_Right:
-			break;
-		case XK_Up:
-			break;
-		case XK_Down:
-			break;
-		case XK_equal:
-			gl.delay -= 0.005;
-			if (gl.delay < 0.005)
-				gl.delay = 0.005;
-			break;
-		case XK_minus:
-			gl.delay += 0.005;
-			break;
-		case XK_1:
-			gl.shapeSelect = 1;
-			break;
-		case XK_2:
-			gl.shapeSelect = 2;
-			break;
-		case XK_3:
-			gl.shapeSelect = 3;
-			break;
-		case XK_4:
-			gl.shapeSelect = 4;
-			break;
-		case XK_Escape:
-			return 1;
-			break;
-	}
+		}
 	return 0;
 }
 
@@ -759,11 +772,20 @@ void physics(void)
 		gl.ball_vel[1] -= 0.9;
 	}
 	gl.ball_pos[1] += gl.ball_vel[1];
+
+	//Checks for out of screen, disables movement and everything on screen. Able to hit escape button
+	//will add a menu for dieing.
+	if (gl.ball_pos[1] < 0.0) {
+		KB_offscreen();
+		state.state_of_game = 1;
+	}
 }
 
 void render(void)
 {
 	switch(state.state_of_game) {
+	    case 1:
+		break;
 	    case 0:
 	    	Rect r;
 		//Clear the screen
@@ -979,7 +1001,7 @@ void render(void)
 		
 		KB_display_time(gl.yres);
 		
-		ggprint8b(&r, 16, c, "W   Walk cycle");
+		//ggprint8b(&r, 16, c, "W   Walk cycle");
 		ggprint8b(&r, 16, c, "E   Explosion");
 		ggprint8b(&r, 16, c, "+   faster");
 		ggprint8b(&r, 16, c, "-   slower");
@@ -987,9 +1009,6 @@ void render(void)
 		ggprint8b(&r, 16, c, "left arrow  <- walk left");
 		ggprint8b(&r, 16, c, "frame: %i", gl.walkFrame);
 		ggprint8b(&r, 16, c, "1-Circle 2-Square 3-Kite 4-Star");
-		//ggprint8b(&r, 16, c, "Time : %i %i", display_sec(), display_milli()); //KB
-		//ggprint8b(&r, 16, c, "p    Randi's Print To Console");
-		//ggprint8b(&r, 16, c, "Jordan's Time Funcs: %f,  %f", jpTest1(), jpTest2());
 		//ggprint8b(&r, 16, c, "Randi's F(1) time: %f | F(2) time: %f", firstFunc(), secondFunc());
 
 		if (gl.movie) {

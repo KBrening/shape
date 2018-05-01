@@ -22,15 +22,21 @@ class kb_set_time
 		int sec_count;
 		int milli_count;
 		int holder;	
-		bool offscreen;
+		bool stoptime;
+		int s_cooldown, c_cooldown, k_cooldown, star_cooldown;
+		bool sc, cc, kc, starc;
 	kb_set_time() {
-	    	offscreen = false;
+	    	stoptime = false;
 		sec_count = 0;
 		milli_count = 0;
 		holder = 0;
+		//cool downs for change
+		s_cooldown = c_cooldown = k_cooldown = 2;
+		star_cooldown = 60;
+		sc = cc = kc = starc = false;
 	}
 	int kb_sec() {
-	    	if (offscreen != true) {
+	    	if (stoptime != true) {
 		    	milli_count = t.inc_timer();
 	
 		    	if (milli_count == 59)
@@ -45,7 +51,7 @@ class kb_set_time
 		return sec_count;
 	}
 	int kb_milli() {
-		if(offscreen != true) {
+		if(stoptime != true) {
 		    	if (milli_count == 59)
 			{
 				milli_count = 0;
@@ -53,6 +59,11 @@ class kb_set_time
 			return milli_count;
 		}
 		return milli_count;
+	}
+	void kb_reset() {
+		sec_count = 0;
+		milli_count = 0;
+		stoptime = false;
 	}
 }distimer;
 
@@ -66,19 +77,37 @@ int display_milli()
 	return distimer.kb_milli();
 }
 
-void KB_display_time(int y)
+void KB_reset_timer()
+{
+	distimer.kb_reset();
+}
+
+void KB_display_time(int x, int y)
 {
 	Rect r;
 	unsigned int c = 0x00ffff44;
 	r.bot = y - 20;
-	r.left = 400;
+	r.left = x/2 - 20;
 	r.center = 0;
-	ggprint8b(&r, 16, c, "Time : %i %i", display_sec(), display_milli());
+	ggprint13(&r, 16, c, "Time : %i sec %i mill", display_sec(), display_milli());
 }
 
-void KB_offscreen()
+void KB_GameOver(int x, int y)
 {
-	distimer.offscreen = true;
+	Rect r;
+	unsigned int c = 0x00ffff44;
+	r.bot = y/2 + 100;
+	r.left = x/2 + 10;
+	r.center = 0;
+	ggprint16(&r, 16, c, "GAME OVER");
+	ggprint10(&r, 16, c, "Press ESC to exit");
+	ggprint10(&r, 16, c, "Press R to restart");
+	
+}
+
+void KB_stoptimer()
+{
+	distimer.stoptime = true;
 }
 
 void KB_pixel (int num, int j, int i, int tx, int ty, Flt dd, Flt offx, Flt offy, Flt ftsz) 

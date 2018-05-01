@@ -22,27 +22,35 @@ class kb_set_time
 		int sec_count;
 		int milli_count;
 		int holder;	
+		bool offscreen;
 	kb_set_time() {
+	    	offscreen = false;
 		sec_count = 0;
 		milli_count = 0;
 		holder = 0;
 	}
 	int kb_sec() {
-	    	milli_count = t.inc_timer();
+	    	if (offscreen != true) {
+		    	milli_count = t.inc_timer();
+	
+		    	if (milli_count == 59)
+			{
+		    		t.reset();
+				milli_count = 0;
+				sec_count = sec_count + 1;
+			}
 
-	    	if (milli_count == 59)
-		{
-	    		t.reset();
-			milli_count = 0;
-			sec_count = sec_count + 1;
+			return sec_count;
 		}
-
 		return sec_count;
 	}
 	int kb_milli() {
-		if (milli_count == 59)
-		{
-			milli_count = 0;
+		if(offscreen != true) {
+		    	if (milli_count == 59)
+			{
+				milli_count = 0;
+			}
+			return milli_count;
 		}
 		return milli_count;
 	}
@@ -66,6 +74,11 @@ void KB_display_time(int y)
 	r.left = 400;
 	r.center = 0;
 	ggprint8b(&r, 16, c, "Time : %i %i", display_sec(), display_milli());
+}
+
+void KB_offscreen()
+{
+	distimer.offscreen = true;
 }
 
 void KB_pixel (int num, int j, int i, int tx, int ty, Flt dd, Flt offx, Flt offy, Flt ftsz) 
@@ -147,4 +160,3 @@ void KB_pixel (int num, int j, int i, int tx, int ty, Flt dd, Flt offx, Flt offy
 	glEnd();
 	glPopMatrix();
 }
-

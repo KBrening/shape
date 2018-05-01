@@ -57,10 +57,12 @@ void render();
 //EXTERNAL FUNCTIONS
 extern int display_sec();
 extern int display_milli();
-extern void KB_display_time(int y);
+extern void KB_display_time(int x, int y);
 extern void KB_pixel(int num, int j, int i,int tx,int ty,Flt dd,Flt offx,Flt offy,Flt ftsz);
 extern void KB_OutOfBound();
-extern void KB_offscreen();
+extern void KB_stoptimer();
+extern void KB_GameOver(int x, int y);
+extern void KB_reset_timer();
 extern double jpTest1();
 extern double jpTest2();
 extern void drawCircle(float radius);
@@ -138,8 +140,8 @@ public:
 		camera[0] = camera[1] = 0.0;
 		movie=0;
 		movieStep=2;
-		xres=800;
-		yres=600;
+		xres=1200;
+		yres=800;
 		walk=0;
 		walkFrame=0;
 		walkImage=NULL;
@@ -167,13 +169,27 @@ public:
 class State {
 public:
 	int state_of_game;
+	int finish_line;
+	int row_of_fin;
+	bool stop_finish;
 
 	State() {
 		state_of_game = 0;
+		finish_line = 0;
+		row_of_fin = 0;
+		stop_finish = false;
 	}
 
 	void set_state(int x) {
 		state_of_game = x;
+	}
+	void set_finish(int x, int row) {
+		finish_line = x;
+		row_of_fin = row + 1;
+		stop_finish = true;
+	}
+	bool check_finish() {
+		return stop_finish;
 	}
 
 } state;
@@ -204,6 +220,11 @@ public:
 				//Log("line: %s\n", line);
 				for (int j=0; j<slen; j++) {
 					arr[nrows][j] = line[j];
+					if (state.check_finish() == false) {
+						if (line[j] == 'f') {
+							state.set_finish(j, nrows);
+						}
+					}
 				}
 				++nrows;
 			}
@@ -602,18 +623,18 @@ int checkKeys(XEvent *e)
 					gl.walk ^= 1;
 					break;
 				case XK_e:
-					gl.exp.pos[0] = 200.0;
-					gl.exp.pos[1] = -60.0;
-					gl.exp.pos[2] =   0.0;
-					timers.recordTime(&gl.exp.time);
-					gl.exp.onoff ^= 1;
+					//gl.exp.pos[0] = 200.0;
+					//gl.exp.pos[1] = -60.0;
+					//gl.exp.pos[2] =   0.0;
+					//timers.recordTime(&gl.exp.time);
+					//gl.exp.onoff ^= 1;
 					break;
 				case XK_f:
-					gl.exp44.pos[0] = 200.0;
-					gl.exp44.pos[1] = -60.0;
-					gl.exp44.pos[2] =   0.0;
-					timers.recordTime(&gl.exp44.time);
-					gl.exp44.onoff ^= 1;
+					//gl.exp44.pos[0] = 200.0;
+					//gl.exp44.pos[1] = -60.0;
+					//gl.exp44.pos[2] =   0.0;
+					//timers.recordTime(&gl.exp44.time);
+					//gl.exp44.onoff ^= 1;
 					break;
 				case XK_p:
 					printToConsole();
@@ -655,6 +676,11 @@ int checkKeys(XEvent *e)
 			switch (key) {
 			    case XK_Escape:
 				return 1;
+				break;
+			    case XK_r:
+				state.state_of_game = 0;
+				KB_reset_timer();
+				gl.camera[0] = 1;
 				break;
 			}
 			break;
@@ -773,18 +799,26 @@ void physics(void)
 	}
 	gl.ball_pos[1] += gl.ball_vel[1];
 
-	//Checks for out of screen, disables movement and everything on screen. Able to hit escape button
-	//will add a menu for dieing.
+	//Checks for out of screen, disables movement and everything on screen.
+	//Set keys in order to move on with the game
 	if (gl.ball_pos[1] < 0.0) {
-		KB_offscreen();
+		KB_stoptimer();
 		state.state_of_game = 1;
 	}
+	
+	//Checks for finish line
+	if( gl.ball_pos[1] == state.row_of_fin && (gl.ball_pos[0] > state.finish_line || 
+	    gl.ball_pos[0] < (state.finish_line + 4))) {
+		KB_stoptimer();
+	}
+
 }
 
 void render(void)
 {
 	switch(state.state_of_game) {
 	    case 1:
+		KB_GameOver(gl.xres ,gl.yres);
 		break;
 	    case 0:
 	    	Rect r;
@@ -999,10 +1033,10 @@ void render(void)
 		r.left = 10;
 		r.center = 0;
 		
-		KB_display_time(gl.yres);
+		KB_display_time(gl.xres, gl.yres);
 		
 		//ggprint8b(&r, 16, c, "W   Walk cycle");
-		ggprint8b(&r, 16, c, "E   Explosion");
+		//ggprint8b(&r, 16, c, "E   Explosion");
 		ggprint8b(&r, 16, c, "+   faster");
 		ggprint8b(&r, 16, c, "-   slower");
 		ggprint8b(&r, 16, c, "right arrow -> walk right");

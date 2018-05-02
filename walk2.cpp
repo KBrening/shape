@@ -684,6 +684,18 @@ int checkKeys(XEvent *e)
 				break;
 			}
 			break;
+		case 2:
+			switch (key) {
+			    case XK_Escape:
+				return 1;
+				break;
+			    case XK_r:
+				state.state_of_game = 0;
+				KB_reset_timer();
+				gl.camera[0] = 1;
+				break;
+			}
+			break;
 		}
 	return 0;
 }
@@ -807,9 +819,9 @@ void physics(void)
 	}
 	
 	//Checks for finish line
-	if( gl.ball_pos[1] == state.row_of_fin && (gl.ball_pos[0] > state.finish_line || 
-	    gl.ball_pos[0] < (state.finish_line + 4))) {
+	if (gl.camera[0] > ((state.finish_line * 28) - 50)) {
 		KB_stoptimer();
+		state.state_of_game = 2;
 	}
 
 }
@@ -817,6 +829,8 @@ void physics(void)
 void render(void)
 {
 	switch(state.state_of_game) {
+	    case 2:
+		break;
 	    case 1:
 		KB_GameOver(gl.xres ,gl.yres);
 		break;

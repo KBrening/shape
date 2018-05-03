@@ -1,6 +1,7 @@
 //Project: Shape
 //Name: Jordan Parks
-//Last modified: 3/9/18
+//1st update: 3/9/18
+//2nd update: 5/3/18
 
 #include <iostream>
 #include <cstdlib>
@@ -8,17 +9,31 @@
 #include "time.h"
 #include "stdio.h"
 #include <ctime>
+#include "GL/glx.h"
+#include <cmath>
+
 
 using namespace std;
 
-/*{
-  Rect r;
-  r.bot = 120;
-  r.left = 10;
-  r.center = 0;
-  ggprint8b(&r, 16, 0x00ffff44, "Jordan's Time Function");
 
-  }*/
+void jpSquareColor()
+{
+
+glColor3f(0.1, 0.4, 0.8); 
+
+}
+
+void jpKiteColor()
+{
+glColor3f(0.2, 0.8, 0.6); 
+
+}
+
+void jpStarColor()
+{
+
+glColor3f(1.0, 0.11, 0.68); 
+}
 
 double jpTest1()
 {
@@ -55,11 +70,4 @@ double jpTest2()
     t += (clock() - start ) / (double) CLOCKS_PER_SEC;
     return t;
 }
-
-
-/*jp_Menu(int x_res, int y_res)
-  {
-
-  }*/
-
 

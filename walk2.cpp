@@ -722,17 +722,6 @@ Flt VecNormalize(Vec vec)
 void physics(void)
 {
 	if (gl.walk || gl.keys[XK_Right] || gl.keys[XK_Left]) {
-		//man is walking...
-		//when time is up, advance the frame.
-		timers.recordTime(&timers.timeCurrent);
-		double timeSpan = timers.timeDiff(&timers.walkTime, &timers.timeCurrent);
-		if (timeSpan > gl.delay) {
-			//advance
-			++gl.walkFrame;
-			if (gl.walkFrame >= 16)
-				gl.walkFrame -= 16;
-			timers.recordTime(&timers.walkTime);
-		}
 		for (int i=0; i<20; i++) {
 			if (gl.keys[XK_Left]) {
 				gl.box[i][0] += 1.0 * (0.05 / gl.delay);
@@ -746,70 +735,67 @@ void physics(void)
 				if (gl.box[i][0] < -10.0)
 					gl.box[i][0] += gl.xres + 10.0;
 				gl.camera[0] += 2.0/lev.tilesize[0] * (0.05 / gl.delay);
-				if (gl.camera[0] > (lev.tilesize[0] * 80)) //THIS IS RIGHT NOW LEVEL LIMIT
+				if (gl.camera[0] > (lev.tilesize[0] * 80)) //THIS IS RIGHT MOST LEVEL LIMIT
 					gl.camera[0] = (lev.tilesize[0] * 80);
-			}
-		}
-		if (gl.exp.onoff) {
-			gl.exp.pos[0] -= 2.0 * (0.05 / gl.delay);
-		}
-		if (gl.exp44.onoff) {
-			gl.exp44.pos[0] -= 2.0 * (0.05 / gl.delay);
-		}
-	}
-	if (gl.exp.onoff) {
-		//explosion is happening
-		timers.recordTime(&timers.timeCurrent);
-		double timeSpan = timers.timeDiff(&gl.exp.time, &timers.timeCurrent);
-		if (timeSpan > gl.exp.delay) {
-			//advance explosion frame
-			++gl.exp.frame;
-			if (gl.exp.frame >= 23) {
-				//explosion is done.
-				gl.exp.onoff = 0;
-				gl.exp.frame = 0;
-			} else {
-				timers.recordTime(&gl.exp.time);
-			}
-		}
-	}
-	if (gl.exp44.onoff) {
-		//explosion is happening
-		timers.recordTime(&timers.timeCurrent);
-		double timeSpan = timers.timeDiff(&gl.exp44.time, &timers.timeCurrent);
-		if (timeSpan > gl.exp44.delay) {
-			//advance explosion frame
-			++gl.exp44.frame;
-			if (gl.exp44.frame >= 16) {
-				//explosion is done.
-				gl.exp44.onoff = 0;
-				gl.exp44.frame = 0;
-			} else {
-				timers.recordTime(&gl.exp44.time);
 			}
 		}
 	}
 	//====================================
 	//Adjust position of ball.
-	//Height of highest tile when ball is?
+	//Height of highest tile where ball is?
 	//====================================
 	Flt dd = lev.ftsz[0];
 	int col = (int)((gl.camera[0]+gl.ball_pos[0]) / dd);
 	col = col % lev.ncols;
 	int hgt = 0;
+	char c = ' ';
 	for (int i=0; i<lev.nrows; i++) {
 		if (lev.arr[i][col] != ' ') {
+			//printf("%c \n", lev.arr[i][col]); fflush(stdout);
+			c = lev.arr[i][col];
 			hgt = (lev.nrows-i) * lev.tilesize[1];
 			break;
 		}
 	}
-	if (gl.ball_pos[1] < (Flt)hgt) {
-		gl.ball_pos[1] = (Flt)hgt;
-		MakeVector(gl.ball_vel, 0, 0, 0);
-	} else {
-		gl.ball_vel[1] -= 0.9;
+	if (gl.shapeSelect == 1) {
+		switch(c) {
+			case ' ':
+				break;
+			case 'b':
+				//deal with height
+				if (gl.keys[XK_Right]) {
+					if (gl.ball_vel[0] >= 0)
+						gl.ball_vel[0] += 0.9;
+				} else if (gl.keys[XK_Left]) {
+					if (gl.ball_vel[0] <= 0)
+						gl.ball_vel[0] -= 0.9;
+				}
+				if (gl.ball_pos[1] < (Flt)hgt)
+					gl.ball_pos[1] = (Flt)hgt;
+				break;
+			case 'o':
+				//break;
+			case 'n':
+				//break;
+			case 'm':
+				//break;
+			case 'p':
+				//break;
+			case 'q':
+				//break;
+			case 'r':
+				//break;
+			default:
+				if (gl.ball_pos[1] < (Flt)hgt) {
+					gl.ball_pos[1] = (Flt)hgt;
+					MakeVector(gl.ball_vel, 0, 0, 0);
+				} else {
+					gl.ball_vel[1] -= 0.9;
+				}
+				gl.ball_pos[1] += gl.ball_vel[1];
+				break;
+		}
 	}
-	gl.ball_pos[1] += gl.ball_vel[1];
 
 	//Checks for out of screen, disables movement and everything on screen.
 	//Set keys in order to move on with the game
@@ -992,7 +978,7 @@ void render(void)
 		//
 		//
 		//-----------------------------------------------------------------------------
-		if (gl.exp.onoff) {
+		/*if (gl.exp.onoff) {
 			h = 80.0;
 			w = 80.0;
 			glPushMatrix();
@@ -1041,7 +1027,7 @@ void render(void)
 			glPopMatrix();
 			glBindTexture(GL_TEXTURE_2D, 0);
 			glDisable(GL_ALPHA_TEST);
-		}
+		}*/
 		unsigned int c = 0x00ffff44;
 		r.bot = gl.yres - 20;
 		r.left = 10;

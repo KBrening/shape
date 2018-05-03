@@ -68,7 +68,7 @@ struct Shape {
 	void Circle(float radius) {
 		glBegin(GL_TRIANGLE_FAN);
 		for (int i = 0; i < n; i++) {
-			glVertex2f(vertices[i][0]*radius, vertices[i][1]*radius);
+			glVertex2f(vertices[i][0]*radius, (vertices[i][1] + 1)*radius);
 		}
 		glEnd();
 	}
@@ -101,8 +101,8 @@ struct Shape {
 } shape;
 
 struct Collision {
-	
-};
+
+} col;
 void drawSquare(int sideLength) 
 {
 	shape.Square(sideLength);

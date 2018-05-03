@@ -7,6 +7,8 @@
 #include <ctime>
 #include "time.h"
 
+// Lab 7 stuff
+
 double mn_loop1() {
     static double time = 0.0;
     int sum1 = 0;

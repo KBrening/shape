@@ -22,6 +22,7 @@
 #include <X11/keysym.h>
 #include <GL/glx.h>
 #include "log.h"
+#include <fstream>
 //#include "ppm.h"
 #include "fonts.h"
 //#include "level.h"
@@ -63,6 +64,8 @@ extern void KB_OutOfBound();
 extern void KB_stoptimer();
 extern void KB_GameOver(int x, int y);
 extern void KB_reset_timer();
+extern void KB_Finish(int x, int y);
+extern void KB_Finish_timer();
 extern double jpTest1();
 extern double jpTest2();
 extern void drawCircle(float radius);
@@ -830,6 +833,7 @@ void render(void)
 {
 	switch(state.state_of_game) {
 	    case 2:
+		KB_Finish(gl.xres, gl.yres);
 		break;
 	    case 1:
 		KB_GameOver(gl.xres ,gl.yres);
